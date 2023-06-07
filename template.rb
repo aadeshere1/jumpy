@@ -43,9 +43,17 @@ def add_gems
     add_gem 'sitemap_generator', '~> 6.3'
     add_gem 'rollbar', '~> 3.4'
     
-    add_gem "rspec-rails", '~> 6.0', '>= 6.0.2'
-    add_gem "factory_bot_rails", '~> 6.2'
-    add_gem "ffaker", '~> 2.21'
+    add_gem "rspec-rails", '~> 6.0', '>= 6.0.2', group: [:development, :test]
+    add_gem "factory_bot_rails", '~> 6.2', group: [:development, :test]
+    add_gem "ffaker", '~> 2.21', group: [:development, :test]
+    add_gem 'shoulda-matchers', '~> 5.3', group: [:development, :test]
+    add_gem 'simplecov', '~> 0.22.0', require: false, group: [:development, :test]
+    add_gem 'database_cleaner', '~> 2.0', '>= 2.0.2', group: [:development, :test]
+    add_gem 'dotenv-rails', '~> 2.8', '>= 2.8.1', groups: [:development, :test]
+    add_gem 'rails-controller-testing', '~> 1.0', '>= 1.0.5', group: [:development, :test]
+    add_gem 'vcr', '~> 6.1', group: [:development, :test]
+    add_gem 'webmock', '~> 3.18', '>= 3.18.1', group: [:development, :test]
+
     add_gem 'rubycritic', '~> 4.8', '>= 4.8.1', group: [:development]
     add_gem 'rubocop-rails', '~> 2.19', '>= 2.19.1', group: [:development]
     add_gem "rubocop-performance", '~> 1.18', group: [:development]
@@ -54,13 +62,7 @@ def add_gems
     add_gem 'erb_lint', '~> 0.4.0', group: [:development]
     add_gem "letter_opener", '~> 1.8', '>= 1.8.1', group: [:development]
     add_gem "bullet", '~> 7.0', '>= 7.0.7', group: [:development]
-    add_gem 'dotenv-rails', '~> 2.8', '>= 2.8.1', groups: [:development, :test]
-    add_gem 'shoulda-matchers', '~> 5.3', group: [:development, :test]
-    add_gem 'database_cleaner', '~> 2.0', '>= 2.0.2', group: [:test]
-    add_gem 'rails-controller-testing', '~> 1.0', '>= 1.0.5', group: [:test]
-    add_gem 'vcr', '~> 6.1', group: [:test]
-    add_gem 'webmock', '~> 3.18', '>= 3.18.1', group: [:test]
-    add_gem 'simplecov', '~> 0.22.0', require: false, group: [:test]
+    add_gem 'rails_live_reload', '~> 0.3.4', group: [:development]
 end
 
 def set_application_name
@@ -174,11 +176,14 @@ def add_rspec
   models = models.reject {|e| e == "ApplicationRecord"}
   models.each {|m| generate "rspec:model #{m}"}
   gsub_file("spec/rails_helper.rb", "# Dir[Rails.root.join('spec', 'support'", "Dir[Rails.root.join('spec', 'support'")
+  gsub_file("spec/rails_helper.rb", "require 'spec_helper'", "")
+  gsub_file("spec/rails_helper.rb", "ActiveRecord::Migration.maintain_test_schema!", "ActiveRecord::Migration.maintain_test_schema! if Rails.env.test?")
   # copy spec helper here
   copy_file "spec/support/database_cleaner.rb"
   copy_file "spec/support/devise.rb"
   copy_file "spec/support/shoulda_matcher.rb"
   copy_file "spec/support/vcr_setup.rb"
+  copy_file "spec/support/factory_bot.rb"
   copy_file "spec/spec_helper.rb", force: true
 
 end
