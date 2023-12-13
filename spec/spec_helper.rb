@@ -15,10 +15,11 @@
 # it.
 #
 # See https://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
-require 'rails_helper'
-require 'simplecov'
 
-SimpleCov.start 'rails' if ENV['COVERAGE'] == 'true'
+require 'simplecov'
+SimpleCov.start 'rails' unless ENV['COVERAGE'] == 'false'
+
+require 'rails_helper'
 
 # shared examples to remove duplicate code
 Dir[Rails.root.join('spec/shared/*.rb')].each { |f| require f }
