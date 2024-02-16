@@ -115,7 +115,7 @@ def copy_templates
   remove_file "app/assets/stylesheets/application.css"
   # directory "app", force: true
   copy_file "app/validators/password_validator.rb"
-  inject_into_file("app/models/user.rb", "validates :password, password: true\n", after: ":validatable\n")
+  inject_into_file("app/models/user.rb", "validates :password, password: true, if: proc { password.present? && User.password_length.include?(password.length) }\n", after: ":validatable\n")
   directory "app", force: true
 
   copy_file ".rubocop.yml"
@@ -210,7 +210,7 @@ def add_bullet_and_active_storage_options
 end
 
 def setup_staging
-  inject_into_file 'app/controllers/application_controller.rb', after: %r{class ApplicationController < ActionController\n} do
+  inject_into_file 'app/controllers/application_controller.rb', after: %r{class ApplicationController < ActionController::Base\n} do
     <<-RUBY
     prepend_before_action :http_basic_authenticate
     def http_basic_authenticate
