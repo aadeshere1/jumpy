@@ -193,7 +193,7 @@ def add_letter_opener
   environment "config.action_mailer.perform_deliveries = true", env: 'development'
 end
 
-def add_bullet
+def add_bullet_and_active_storage_options
   configs = """
   config.after_initialize do
     Bullet.enable        = true
@@ -201,6 +201,8 @@ def add_bullet
     Bullet.console       = true
     Bullet.rails_logger  = true
     Bullet.add_footer    = true
+
+    ActiveStorage::Current.url_options = {host: 'http://localhost:3000'}
   end
   """
   inject_into_file("config/environments/development.rb", configs, after: "Rails.application.configure do\n")
@@ -273,7 +275,7 @@ after_bundle do
 
   add_rollbar
   add_letter_opener
-  add_bullet
+  add_bullet_and_active_storage_options
   setup_staging
   add_node_version
   add_smtp_setting
