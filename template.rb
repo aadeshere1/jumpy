@@ -37,32 +37,32 @@ def rails_7_or_newer?
 end
 
 def add_gems
-    add_gem 'delayed_job_active_record', '~> 4.1', '>= 4.1.7'
-    add_gem 'friendly_id', '~> 5.5'
-    add_gem 'simple_form', '~> 5.2'
+    add_gem 'delayed_job_active_record', '~> 4.1', '>= 4.1.8'
+    add_gem 'friendly_id', '~> 5.5', '>= 5.5.1'
+    add_gem 'simple_form', '~> 5.3'
     add_gem 'sitemap_generator', '~> 6.3'
-    add_gem 'rollbar', '~> 3.4'
-    
-    add_gem "rspec-rails", '~> 6.0', '>= 6.0.2', group: [:development, :test]
-    add_gem "factory_bot_rails", '~> 6.2', group: [:development, :test]
-    add_gem "ffaker", '~> 2.21', group: [:development, :test]
-    add_gem 'shoulda-matchers', '~> 5.3', group: [:development, :test]
+    add_gem 'rollbar', '~> 3.5', '>= 3.5.1'
+
+    add_gem 'rspec-rails', '~> 6.1', '>= 6.1.1', group: [:development, :test]
+    add_gem 'factory_bot_rails', '~> 6.4', '>= 6.4.3', group: [:development, :test]
+    add_gem 'ffaker', '~> 2.23', group: [:development, :test]
+    add_gem 'shoulda-matchers', '~> 6.1', group: [:development, :test]
     add_gem 'simplecov', '~> 0.22.0', require: false, group: [:development, :test]
     add_gem 'database_cleaner', '~> 2.0', '>= 2.0.2', group: [:development, :test]
-    add_gem 'dotenv-rails', '~> 2.8', '>= 2.8.1', groups: [:development, :test]
+    add_gem 'dotenv-rails', '~> 3.0', '>= 3.0.2', groups: [:development, :test]
     add_gem 'rails-controller-testing', '~> 1.0', '>= 1.0.5', group: [:development, :test]
-    add_gem 'vcr', '~> 6.1', group: [:development, :test]
-    add_gem 'webmock', '~> 3.18', '>= 3.18.1', group: [:development, :test]
+    add_gem 'vcr', '~> 6.2', group: [:development, :test]
+    add_gem 'webmock', '~> 3.20', group: [:development, :test]
 
-    add_gem 'rubycritic', '~> 4.8', '>= 4.8.1', group: [:development]
-    add_gem 'rubocop-rails', '~> 2.19', '>= 2.19.1', group: [:development]
-    add_gem "rubocop-performance", '~> 1.18', group: [:development]
-    add_gem "rubocop-rspec", '~> 2.22', group: [:development]
-    add_gem "annotate", '~> 3.2', group: [:development]
-    add_gem 'erb_lint', '~> 0.4.0', group: [:development]
-    add_gem "letter_opener", '~> 1.8', '>= 1.8.1', group: [:development]
-    add_gem "bullet", '~> 7.0', '>= 7.0.7', group: [:development]
-    add_gem 'rails_live_reload', '~> 0.3.4', group: [:development]
+    add_gem 'rubycritic', '~> 4.9', group: [:development]
+    add_gem 'rubocop-rails', '~> 2.23', '>= 2.23.1', group: [:development]
+    add_gem 'rubocop-performance', '~> 1.20', '>= 1.20.2', group: [:development]
+    add_gem 'rubocop-rspec', '~> 2.26', '>= 2.26.1', group: [:development]
+    add_gem 'annotate', '~> 3.2', group: [:development]
+    add_gem 'erb_lint', '~> 0.5.0', group: [:development]
+    add_gem 'letter_opener', '~> 1.9', group: [:development]
+    add_gem 'bullet', '~> 7.1', '>= 7.1.6', group: [:development]
+    add_gem 'rails_live_reload', '~> 0.3.5', group: [:development]
 end
 
 def set_application_name
@@ -73,7 +73,7 @@ end
 
 def add_users
   if yes?("Would you like to install Devise for user management ?")
-    add_gem 'devise', '~> 4.9', '>= 4.9.2'
+    add_gem 'devise', '~> 4.9', '>= 4.9.3'
     run "bundle install"
     generate "devise:install"
     @model_name = ask("What would you like the user model to be called? [user]")
@@ -97,11 +97,11 @@ def add_users
     rails_command "g migration AddSlugTo#{@model_name.capitalize}s slug:uniq"
     gsub_file(Dir["db/migrate/**/*uid_to_#{@model_name.downcase}s.rb"].first, /:uid, :string/, ":uid, :string, after: :id")
 
-    
+
     inject_into_file("app/models/#{@model_name.downcase}.rb", "include Uid\n", before: "devise :database_authenticatable")
 
     if yes?("Would you like to add active admin for admin features ? ")
-      add_gem 'activeadmin', '~> 2.13', '>= 2.13.1'
+      add_gem 'activeadmin', '~> 3.2'
       run "bundle install"
       generate "active_admin:install"
       run "bundle exec rails db:create db:migrate"
@@ -117,7 +117,7 @@ def copy_templates
   inject_into_file("app/models/user.rb", "validates :password, password: true\n", after: ":validatable\n")
   directory "app", force: true
 
-  copy_file ".rubocop.yml"  
+  copy_file ".rubocop.yml"
   copy_file ".erb-lint.yml"
   copy_file ".github/PULL_REQUEST_TEMPLATE/release.md"
   copy_file ".github/workflows/lint_and_tests.yml"
@@ -138,7 +138,7 @@ end
 
 def add_delayed_job
   generate "delayed_job:active_record"
-  environment "config.active_job.queue_adapter = :delayed_job"  
+  environment "config.active_job.queue_adapter = :delayed_job"
 end
 
 def add_friendly_id
@@ -258,7 +258,7 @@ after_bundle do
   set_application_name
 
   copy_file "app/models/concerns/uid.rb"
-  
+
   add_users
   add_rspec
   add_friendly_id
@@ -268,9 +268,9 @@ after_bundle do
   rails_command "active_storage:install"
   run "bundle lock --add-platform x86_64-linux"
   # gsub_file "config/initializers/devise.rb", /  # config.secret_key = .+/, "  config.secret_key = Rails.application.credentials.secret_key_base"
-  
+
   copy_templates
-  
+
   add_rollbar
   add_letter_opener
   add_bullet
