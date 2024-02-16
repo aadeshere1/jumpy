@@ -4,12 +4,13 @@ on:
     branches:
       - develop
   pull_request:
-    types: [opened, synchronize, reopened]
+    types: [opened, synchronize, reopened, ready_for_review]
 
 jobs:
   linter:
     name: Lint check
     runs-on: ubuntu-latest
+    if: "!github.event.pull_request.draft"
     steps:
       - uses: actions/checkout@v4
 
