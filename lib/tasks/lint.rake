@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-desc 'Lint erb files'
+desc 'Lint files'
 
 task lint: :environment do
   puts 'Beautifying files'
