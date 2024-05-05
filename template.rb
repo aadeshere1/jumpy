@@ -221,7 +221,7 @@ def setup_staging
 end
 
 def add_node_version
-  run "curl https://nodejs.org/en/download | grep -oE 'Latest LTS Version<!-- -->: <strong>[0-9]+\.[0-9]+\.[0-9]+</strong>' | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' > .node-version"
+  run "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash"
 end
 
 def add_smtp_setting
