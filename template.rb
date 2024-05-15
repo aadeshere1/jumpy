@@ -343,46 +343,46 @@ after_bundle do
   generate "controller home index"
   error_pages
 
-  def add_arctic_admin
-    # Add Arctic Admin gem to Gemfile
-    add_gem 'arctic_admin', '~> 4.3', '>= 4.3.1'
+  # def add_arctic_admin
+  #   # Add Arctic Admin gem to Gemfile
+  #   add_gem 'arctic_admin', '~> 4.3', '>= 4.3.1'
   
-    # Bundle install
-    run "bundle install"
+  #   # Bundle install
+  #   run "bundle install"
   
-    # Configuration for Arctic Admin
-    inject_into_file "config/initializers/active_admin.rb", before: "# == Register Stylesheets\n" do
-      <<-RUBY
-      meta_tags_options = { viewport: 'width=device-width, initial-scale=1' }
-      config.meta_tags = meta_tags_options
-      config.meta_tags_for_logged_out_pages = meta_tags_options\n\n
-      RUBY
-    end
+  #   # Configuration for Arctic Admin
+  #   inject_into_file "config/initializers/active_admin.rb", before: "# == Register Stylesheets\n" do
+  #     <<-RUBY
+  #     meta_tags_options = { viewport: 'width=device-width, initial-scale=1' }
+  #     config.meta_tags = meta_tags_options
+  #     config.meta_tags_for_logged_out_pages = meta_tags_options\n\n
+  #     RUBY
+  #   end
   
-    # Installation of Font Awesome
-    run "yarn add @fortawesome/fontawesome-free"
+  #   # Installation of Font Awesome
+  #   run "yarn add @fortawesome/fontawesome-free"
   
-    # # Use Arctic Admin CSS with Sprockets
-    # inject_into_file "app/assets/stylesheets/active_admin.css", before: " *= require active_admin/base\n" do
-    #   " *= require arctic_admin/base\n"
-    # end
+  #   # # Use Arctic Admin CSS with Sprockets
+  #   # inject_into_file "app/assets/stylesheets/active_admin.css", before: " *= require active_admin/base\n" do
+  #   #   " *= require arctic_admin/base\n"
+  #   # end
   
-    # Remove the line that requires active_admin/base in active_admin.css
-    # gsub_file "app/assets/stylesheets/active_admin.css", " *= require active_admin/base\n", ""
+  #   # Remove the line that requires active_admin/base in active_admin.css
+  #   # gsub_file "app/assets/stylesheets/active_admin.css", " *= require active_admin/base\n", ""
 
 
-  # Add SCSS support
-    create_file "app/assets/stylesheets/active_admin.scss", <<-SCSS
-    @import "arctic_admin/base";
-    SCSS
+  # # Add SCSS support
+  #   create_file "app/assets/stylesheets/active_admin.scss", <<-SCSS
+  #   @import "arctic_admin/base";
+  #   SCSS
 
-    # Remove the line that imports active_admin/base in active_admin.scss
-    gsub_file "app/assets/stylesheets/active_admin.scss", '@import "active_admin/base";', ''
+  #   # Remove the line that imports active_admin/base in active_admin.scss
+  #   gsub_file "app/assets/stylesheets/active_admin.scss", '@import "active_admin/base";', ''
 
-  end
+  # end
   
-  # Call the method to add Arctic Admin
-  add_arctic_admin
+  # # Call the method to add Arctic Admin
+  # add_arctic_admin
 
   generate 'paper_trail:install'
   rails_command 'db:migrate'
