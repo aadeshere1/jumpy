@@ -58,12 +58,13 @@ def add_gems
     add_gem 'rubocop-performance', '~> 1.20', '>= 1.20.2', group: [:development]
     add_gem 'rubocop-rspec', '~> 2.26', '>= 2.26.1', group: [:development]
     add_gem 'rubocop-factory_bot', '~>2.25', '>=2.25.1', group: [:development]
-    add_gem "annotate", '~> 3.2', group: [:development]
+    add_gem 'annotate', '~> 3.2', group: [:development]
     add_gem 'erb_lint', '~> 0.5.0', group: [:development]
     add_gem 'letter_opener', '~> 1.9', group: [:development]
     add_gem 'bullet', '~> 7.1', '>= 7.1.6', group: [:development]
     add_gem 'rails_live_reload', '~> 0.3.5', group: [:development]
     add_gem 'paper_trail', '~> 15.1'
+    add_gem 'i18n-js', '~> 4.2', '>= 4.2.3'
 end
 
 def add_yarn_packages
@@ -74,11 +75,9 @@ def add_yup_validation
 
   create_file 'app/javascript/validation.js', <<~JS
   import { object, string } from 'yup';
-
   document.addEventListener('DOMContentLoaded', () => {
     // Select all forms on the page
     const forms = document.querySelectorAll('form');
-
     forms.forEach(form => {
       // Check if the form is a sign-up form
       if (form.id === 'new_user') {
@@ -87,10 +86,8 @@ def add_yup_validation
           email: string().email('Invalid email').required('Email is required'),
           password: string().min(8, 'Password must be at least 8 characters').required('Password is required')
         });
-
         form.addEventListener('submit', async (event) => {
           event.preventDefault(); // Prevent default form submission
-
           const formData = new FormData(form);
 
           try {
@@ -104,7 +101,6 @@ def add_yup_validation
             // Form data is valid, continue with form submission
             form.submit();
           } catch (error) {
-            // Handle validation errors
             console.error('Validation Error:', error);
             // Display validation errors to the user
           }
@@ -150,14 +146,10 @@ def add_users
     rails_command "g migration AddUidTo#{@model_name.capitalize}s uid:string:uniq"
     rails_command "g migration AddSlugTo#{@model_name.capitalize}s slug:uniq"
     gsub_file(Dir["db/migrate/**/*uid_to_#{@model_name.downcase}s.rb"].first, /:uid, :string/, ":uid, :string,after: :id")
-
-
-    
     inject_into_file("app/models/#{@model_name.downcase}.rb", "  include Uid\n  has_paper_trail\n", before: "devise :database_authenticatable\n")
 
     if yes?("Would you like to add active admin for admin features ? ")
       gem 'activeadmin', '~> 3.2', '>= 3.2.1'
-
       run "bundle install"
       generate "active_admin:install"
       run "bundle exec rails db:create"
@@ -317,6 +309,38 @@ add_template_repository_to_source_path
 add_node_version
 add_gems
 
+
+def add_i18n_js_config
+  create_file 'config/i18n.yml', <<-YAML
+  translations:
+    - file: "app/javascript/locales.json"
+      patterns:
+        - "errors.*"
+        - "activerecord.errors.*"
+        - "*.hello.*"
+  YAML
+end
+
+def setup_i18n_js
+    create_file 'app/javascript/locales.json', <<-JSON
+      {
+   
+      }
+    JSON
+
+  append_to_file 'app/javascript/application.js', <<-JS
+      import I18n from 'i18n-js';
+      import translations from './locales.json';
+
+      I18n.translations = translations;
+    JS
+end
+
+def export_i18n_translations
+  run "bundle exec i18n export"
+end
+
+
 after_bundle do
 
   add_yarn_packages
@@ -328,6 +352,9 @@ after_bundle do
   copy_file "app/models/concerns/uid.rb"
 
   add_users
+  add_i18n_js_config
+  setup_i18n_js
+  export_i18n_translations
   add_rspec
   add_friendly_id
   add_delayed_job
